@@ -1,41 +1,25 @@
-name: Deploy
+name: Deploy Application
 
 on:
-  deployment:
-    types: [created] # Garante que o workflow é acionado quando um deployment é criado
+  push:
+    branches:
+      - main  # Executa o deploy no push para a branch main
 
 jobs:
-  deployment:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Check out the repository
+      uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.x # Atualize para uma versão mais recente se necessário
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
 
-      - name: Deployment pending
-        uses: deliverybot/deployment-status@v1
-        with:
-          state: 'pending'
-          token: ${{ secrets.GITHUB_TOKEN }} # Use o segredo correto para o token
+    - name: Install dependencies
+      run: npm install
 
-      - name: Deploy
-        run: npm run deploy
-
-      - name: Deployment success
-        if: success()
-        uses: deliverybot/deployment-status@v1
-        with:
-          state: 'success'
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Deployment failure
-        if: failure()
-        uses: deliverybot/deployment-status@v1
-        with:
-          state: 'failure'
-          token: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Build the application
+    #   run: npm run build
