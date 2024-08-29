@@ -1,8 +1,9 @@
 name: Deploy
 
 on:
-  deployment:
-    types: [created] # Garante que o workflow é acionado quando um deployment é criado
+  push: 
+    branches: 
+      - main
 
 jobs:
   deployment:
