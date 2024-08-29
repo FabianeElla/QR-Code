@@ -1,18 +1,30 @@
-name: Continuous Delivery-Dogs
+env:
+  TERRAFORM_ACTIONS_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  OPENTOFU_VERSION: "1.6.2"
+  # more provider environment variables can be set here
+
+
+name: OpenTofu CD
 
 on:
-  pull_request:
+  push:
     branches:
       - main
+  pull_request:
 
 jobs:
-  deliver:
-    name: Run Action Dogs
+  terraform-action:
     runs-on: ubuntu-latest
-
+    concurrency:
+      group: limit-concurrency-do-not-remove-this
+      cancel-in-progress: false
     steps:
-
-      - name: Doggoes as an Action
-        uses: stanleynguyen/action-dogs@v1
+      - name: OpenTofu CD              
+        uses: GlueOps/github-actions-opentofu-continuous-delivery@v0.0.5
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          backend_config: |
+            access_key=${{ vars.TF_S3_BACKEND_AWS_ACCESS_KEY }}
+            secret_key=${{ secrets.TF_S3_BACKEND_AWS_SECRET_ACCESS_KEY }}
+            bucket=${{ vars.TF_S3_BACKEND_BUCKET_NAME }}
+            region=${{ vars.TF_S3_BACKEND_BUCKET_REGION }}
+            key=${{ github.repository }}/terraform.tfstate
