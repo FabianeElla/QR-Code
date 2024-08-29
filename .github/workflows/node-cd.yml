@@ -1,8 +1,8 @@
-name: Delivery
+name: Deploy
 
 on:
   deployment:
-    types: [created] 
+    types: [created] # Garante que o workflow é acionado quando um deployment é criado
 
 jobs:
   deployment:
