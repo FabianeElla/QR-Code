@@ -1,13 +1,13 @@
-name: Continuous Delivery - Dogs
+name: Continuous Delivery-Dogs
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
 jobs:
   deliver:
-    name: Lint
+    name: Run Action Dogs
     runs-on: ubuntu-latest
 
     permissions:
@@ -23,4 +23,5 @@ jobs:
 
       - name: Action Dogs
         uses: stanleynguyen/action-dogs@v1
-
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
