@@ -1,0 +1,27 @@
+name: Continuous Delivery - Dogs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deliver:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Action Dogs
+        uses: stanleynguyen/action-dogs@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
