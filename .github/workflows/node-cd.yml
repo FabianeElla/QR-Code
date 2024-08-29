@@ -1,7 +1,13 @@
+
 # .github/workflows/deploy.yml
 name: Deploy
 
 on: ['deployment']
+name: Deploy
+
+on:
+  deployment:
+    types: [created] # Garante que o workflow é acionado quando um deployment é criado
 
 jobs:
   deployment:
