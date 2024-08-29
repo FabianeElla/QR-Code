@@ -1,28 +1,40 @@
-name: Delivery
+# .github/workflows/deploy.yml
+name: Deploy
 
-on:
-  deployment:
-    types: [created] 
+on: ['deployment']
 
 jobs:
   deployment:
-    runs-on: ubuntu-latest
+
+    runs-on: 'ubuntu-latest'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v1
+    - name: 'use node 8.x'
+      uses: actions/setup-node@v1
+      with:
+        node-version: 8.x
 
-      - name: Deploy
-        uses: deliverybot/helm@v1
-        with:
-          release: 'nginx'
-          namespace: 'default'
-          chart: 'app'
-          token: ${{ secrets.GITHUB_TOKEN }} # Usa o token correto para a autenticação
-          values: |
-            name: foobar
-          value-files: |
-            values.yaml
-            values.production.yaml
-        env:
-          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
+    - name: 'deployment pending'
+      uses: 'deliverybot/deployment-status@v1'
+      with:
+        state: 'pending'
+        token: '${{ github.token }}'
+
+    - name: 'deploy'
+      run: |
+        npm run deploy
+
+    - name: 'deployment success'
+      if: success()
+      uses: 'deliverybot/deployment-status@v1'
+      with:
+        state: 'success'
+        token: '${{ github.token }}'
+
+    - name: 'deployment failure'
+      if: failure()
+      uses: 'deliverybot/deployment-status@v1'
+      with:
+        state: 'failure'
+        token: '${{ github.token }}'
