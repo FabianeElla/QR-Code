@@ -10,18 +10,9 @@ jobs:
     name: Run Action Dogs
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      packages: read
-      statuses: write
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Action Dogs
+      - name: Doggoes as an Action
         uses: stanleynguyen/action-dogs@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
