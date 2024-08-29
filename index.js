@@ -1,6 +1,13 @@
 import inquirer from 'inquirer';
 import * as qr from "qr-image";
 import fs from "fs";
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Emula o __dirname em módulos ES
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 inquirer
   .prompt([{message: "Digite uma URL: ", name: "URL"}])
@@ -21,10 +28,18 @@ inquirer
     }
   });
 
-  var count = 0;
+  var count = 0; //contador para nomear os arquivos txt 
   function writeDoc(content){
 
-    fs.writeFile(`input_URL${count}.txt`, content, (error) => {
+     const dir = path.join(__dirname, './urls'); 
+     const filePath = path.join(dir, `input_URL${count}.txt`);
+
+     if (!fs.existsSync(dir)) {
+         fs.mkdirSync(dir, { recursive: true });
+     }
+ 
+
+    fs.writeFile(filePath, content, (error) => {
         if (error) throw console.log("Ocorreu um erro");
         else console.log("Deu certo!");
         count++;
