@@ -1,8 +1,3 @@
-
-# .github/workflows/deploy.yml
-name: Deploy
-
-on: ['deployment']
 name: Deploy
 
 on:
@@ -11,36 +6,36 @@ on:
 
 jobs:
   deployment:
-
-    runs-on: 'ubuntu-latest'
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: 'use node 8.x'
-      uses: actions/setup-node@v1
-      with:
-        node-version: 8.x
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: 'deployment pending'
-      uses: 'deliverybot/deployment-status@v1'
-      with:
-        state: 'pending'
-        token: '${{ github.token }}'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x # Atualize para uma versão mais recente se necessário
 
-    - name: 'deploy'
-      run: |
-        npm run deploy
+      - name: Deployment pending
+        uses: deliverybot/deployment-status@v1
+        with:
+          state: 'pending'
+          token: ${{ secrets.GITHUB_TOKEN }} # Use o segredo correto para o token
 
-    - name: 'deployment success'
-      if: success()
-      uses: 'deliverybot/deployment-status@v1'
-      with:
-        state: 'success'
-        token: '${{ github.token }}'
+      - name: Deploy
+        run: npm run deploy
 
-    - name: 'deployment failure'
-      if: failure()
-      uses: 'deliverybot/deployment-status@v1'
-      with:
-        state: 'failure'
-        token: '${{ github.token }}'
+      - name: Deployment success
+        if: success()
+        uses: deliverybot/deployment-status@v1
+        with:
+          state: 'success'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deployment failure
+        if: failure()
+        uses: deliverybot/deployment-status@v1
+        with:
+          state: 'failure'
+          token: ${{ secrets.GITHUB_TOKEN }}
