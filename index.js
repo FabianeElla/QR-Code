@@ -4,22 +4,29 @@ import fs from "fs";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Emula o __dirname em módulos ES
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 inquirer
   .prompt([{message: "Digite uma URL: ", name: "URL"}])
   .then((answers) => {
     const userURL = answers.URL;
-    const qr_png = qr.image(userURL, {type: "png"});
-    qr_png.pipe(fs.createWriteStream(`${userURL}.png`));
-    const png_string = qr.imageSync(userURL, { type: 'png' });
+   
+    const pngDir = path.join(__dirname, './qrcodes');
+
+    if (!fs.existsSync(pngDir)) {
+        fs.mkdirSync(pngDir, { recursive: true });
+    }
+
+    const pngPath = path.join(pngDir, `${userURL}.png`);
+
+    const qr_png = qr.image(userURL, { type: "png" });
+    qr_png.pipe(fs.createWriteStream(pngPath));
 
     writeDoc(userURL);
     console.log("Ref"+count);
   })
+
   .catch((error) => {
     if (error.isTtyError) {
       console.log("Ocorreu um erro");
@@ -38,7 +45,6 @@ inquirer
          fs.mkdirSync(dir, { recursive: true });
      }
  
-
     fs.writeFile(filePath, content, (error) => {
         if (error) throw console.log("Ocorreu um erro");
         else console.log("Deu certo!");
