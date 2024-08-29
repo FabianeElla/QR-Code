@@ -1,30 +1,26 @@
-env:
-  TERRAFORM_ACTIONS_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  OPENTOFU_VERSION: "1.6.2"
-  # more provider environment variables can be set here
-
-
-name: OpenTofu CD
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+# .github/workflows/deploy.yml
+name: Deploy
+on: ['deployment']
 
 jobs:
-  terraform-action:
-    runs-on: ubuntu-latest
-    concurrency:
-      group: limit-concurrency-do-not-remove-this
-      cancel-in-progress: false
+  deployment:
+    runs-on: 'ubuntu-latest'
     steps:
-      - name: OpenTofu CD              
-        uses: GlueOps/github-actions-opentofu-continuous-delivery@v0.0.5
-        with:
-          backend_config: |
-            access_key=${{ vars.TF_S3_BACKEND_AWS_ACCESS_KEY }}
-            secret_key=${{ secrets.TF_S3_BACKEND_AWS_SECRET_ACCESS_KEY }}
-            bucket=${{ vars.TF_S3_BACKEND_BUCKET_NAME }}
-            region=${{ vars.TF_S3_BACKEND_BUCKET_REGION }}
-            key=${{ github.repository }}/terraform.tfstate
+    - uses: actions/checkout@v1
+
+    - name: 'Deploy'
+      uses: 'deliverybot/helm@v1'
+      with:
+        release: 'nginx'
+        namespace: 'default'
+        chart: 'app'
+        token: '${{ github.token }}'
+        values: |
+          name: foobar
+        value-files: >-
+        [
+          "values.yaml", 
+          "values.production.yaml"
+        ]
+      env:
+        KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
