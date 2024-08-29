@@ -21,7 +21,7 @@ inquirer
     }
   });
 
-  var count = 0; //contador para nomear os arquivos txt 
+  var count = 0;
   function writeDoc(content){
 
     fs.writeFile(`input_URL${count}.txt`, content, (error) => {
