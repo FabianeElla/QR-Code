@@ -1,26 +1,26 @@
-name: Continuous Delivery - Dogs
-
-on:
-  push:
-    branches:
-      - main
+# .github/workflows/deploy.yml
+name: Deploy
+on: ['deployment']
 
 jobs:
-  deliver:
-    name: Lint
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: read
-      statuses: write
-
+  deployment:
+    runs-on: 'ubuntu-latest'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - uses: actions/checkout@v1
 
-      - name: Action Dogs
-        uses: stanleynguyen/action-dogs@v1
-
+    - name: 'Deploy'
+      uses: 'deliverybot/helm@v1'
+      with:
+        release: 'nginx'
+        namespace: 'default'
+        chart: 'app'
+        token: '${{ github.token }}'
+        values: |
+          name: foobar
+        value-files: >-
+        [
+          "values.yaml", 
+          "values.production.yaml"
+        ]
+      env:
+        KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
