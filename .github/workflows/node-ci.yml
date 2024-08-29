@@ -1,4 +1,4 @@
-name: Node version
+name: Continuos Integration - Node version
 
 on: push
 
