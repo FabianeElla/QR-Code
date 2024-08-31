@@ -4,6 +4,7 @@ import fs from "fs";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+//Veriáveis
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -26,7 +27,7 @@ function askForURL() {
         fs.mkdirSync(pngDir, { recursive: true });
       }
 
-      const pngPath = path.join(pngDir, `${userURL}.png`);
+      const pngPath = path.join(pngDir, `QR_Code${count}.png`);
 
       const qr_png = qr.image(userURL, { type: "png" });
       qr_png.pipe(fs.createWriteStream(pngPath));
