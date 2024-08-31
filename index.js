@@ -7,48 +7,62 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-inquirer
-  .prompt([{message: "Digite uma URL: ", name: "URL"}])
-  .then((answers) => {
-    const userURL = answers.URL;
-   
-    const pngDir = path.join(__dirname, './qrcodes');
+let count = 0;
 
-    if (!fs.existsSync(pngDir)) {
+function askForURL() {
+  inquirer
+    .prompt([{ message: "Digite uma URL (ou 'sair' para finalizar): ", name: "URL" }])
+    .then((answers) => {
+      const userURL = answers.URL;
+
+      if (userURL.toLowerCase() === 'sair') {
+        console.log("Finalizando...");
+        return;
+      }
+
+      const pngDir = path.join(__dirname, './qrcodes');
+
+      if (!fs.existsSync(pngDir)) {
         fs.mkdirSync(pngDir, { recursive: true });
-    }
+      }
 
-    const pngPath = path.join(pngDir, `${userURL}.png`);
+      const pngPath = path.join(pngDir, `${userURL}.png`);
 
-    const qr_png = qr.image(userURL, { type: "png" });
-    qr_png.pipe(fs.createWriteStream(pngPath));
+      const qr_png = qr.image(userURL, { type: "png" });
+      qr_png.pipe(fs.createWriteStream(pngPath));
 
-    writeDoc(userURL);
-    console.log("Ref"+count);
-  })
+      writeDoc(userURL);
+      console.log(`Arquivo PNG criado para a URL: ${userURL}\n`);
 
-  .catch((error) => {
-    if (error.isTtyError) {
-      console.log("Ocorreu um erro");
+      // Continuar pedindo URLs até o usuário digitar 'sair'
+      askForURL();
+    })
+    .catch((error) => {
+      if (error.isTtyError) {
+        console.log("Ocorreu um erro");
+      } else {
+        console.log(error);
+      }
+    });
+}
+
+function writeDoc(content) {
+  const dir = path.join(__dirname, './urls');
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
+  const filePath = path.join(dir, `input_URL${count}.txt`);
+
+  fs.writeFile(filePath, content, (error) => {
+    if (error) {
+      console.log("Ocorreu um erro ao salvar o arquivo.");
     } else {
-      console.log(error);
+      count++; //Incrementar o contador após criar o arquivo
     }
   });
+}
 
-  var count = 0; //contador para nomear os arquivos txt 
-  function writeDoc(content){
-
-     const dir = path.join(__dirname, './urls'); 
-     const filePath = path.join(dir, `input_URL${count}.txt`);
-
-     if (!fs.existsSync(dir)) {
-         fs.mkdirSync(dir, { recursive: true });
-     }
- 
-    fs.writeFile(filePath, content, (error) => {
-        if (error) throw console.log("Ocorreu um erro");
-        else console.log("Deu certo!");
-        count++;
-        console.log(count);
-      }); 
-  } 
+//Iniciar o processo de perguntar URLs
+askForURL();
