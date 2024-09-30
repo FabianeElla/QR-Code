@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 let count = 0;
 
-function askForURL() {
+export function askForURL() {
   inquirer
     .prompt([{ message: "Digite uma URL (ou 'sair' para finalizar): ", name: "URL" }])
     .then((answers) => {
@@ -21,7 +21,7 @@ function askForURL() {
         return;
       }
 
-      const pngDir = path.join(__dirname, './qrcodes');
+      const pngDir = path.join(__dirname, '../qrcodes');
 
       if (!fs.existsSync(pngDir)) {
         fs.mkdirSync(pngDir, { recursive: true });
@@ -47,8 +47,8 @@ function askForURL() {
     });
 }
 
-function writeDoc(content) {
-  const dir = path.join(__dirname, './urls');
+export function writeDoc(content) {
+  const dir = path.join(__dirname, '../urls');
 
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
